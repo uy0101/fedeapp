@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>I Migliori Punteggi – Quiz sul Calcio</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>I Migliori Punteggi</h1>
+    <nav>
+      <a href="index.html">Gioca</a>
+      <a href="leaderboard.html" class="active">I Migliori Punteggi</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <p>I migliori 5 punteggi salvati in questo browser:</p>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Data</th>
+            <th>Giocatore</th>
+            <th>Punteggio</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body"></tbody>
+      </table>
+      <div class="actions">
+        <button id="clear-btn" class="danger">Svuota punteggi</button>
+        <a class="secondary" href="index.html">Torna al gioco</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small>Memoria locale del browser (LocalStorage). I dati rimangono su questo dispositivo.</small>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = 'quizTopScores';
+    function loadLeaderboard() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      arr.sort((a,b) => { if (b.score !== a.score) return b.score - a.score; return new Date(b.date) - new Date(a.date); });
+      const top5 = arr.slice(0,5);
+      const tbody = document.getElementById('leaderboard-body');
+      tbody.innerHTML = '';
+      top5.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        const date = new Date(item.date).toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric' });
+        tr.innerHTML = `<td>${idx+1}</td><td>${date}</td><td>${item.name}</td><td>${item.score}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    function clearLeaderboard() {
+      if (confirm('Vuoi davvero svuotare i punteggi salvati su questo dispositivo?')) { localStorage.removeItem(STORAGE_KEY); loadLeaderboard(); }
+    }
+    document.getElementById('clear-btn').addEventListener('click', clearLeaderboard);
+    loadLeaderboard();
+  </script>
+</body>
+</html>
