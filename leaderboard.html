@@ -39,7 +39,7 @@
   <footer>
     <small>Memoria locale del browser (LocalStorage). I dati rimangono su questo dispositivo.</small>
   </footer>
-
+<!--
   <script>
     const STORAGE_KEY = 'quizTopScores';
     function loadLeaderboard() {
@@ -62,5 +62,43 @@
     document.getElementById('clear-btn').addEventListener('click', clearLeaderboard);
     loadLeaderboard();
   </script>
+
+-->
+  
+<script>
+  const API_URL = 'https://script.google.com/macros/s/AKfycbx1HdH-ItpI553s6uHVOed4oqEDFy2v2yB7dfBV4-DE7bIE2z5jG3ABcXDsKrOvxZoR/exec';
+
+  async function loadLeaderboard() {
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json(); // { top: [...] }
+      const top5 = (data.top || []).slice(0, 5);
+
+      const tbody = document.getElementById('leaderboard-body');
+      tbody.innerHTML = '';
+      top5.forEach((item, idx) => {
+        const dateStr = new Date(item.date).toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric' });
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${idx+1}</td><td>${dateStr}</td><td>${item.name}</td><td>${item.score}</td>`;
+        tbody.appendChild(tr);
+      });
+    } catch (e) {
+      console.error('Errore leaderboard globale:', e);
+    }
+  }
+
+  // Il “Svuota punteggi” non ha senso per la globale: lo rimpiazziamo con un avviso
+  document.getElementById('clear-btn').addEventListener('click', () => {
+    alert('Leaderboard globale: non si può svuotare da qui.');
+  });
+
+  loadLeaderboard();
+</script>
+
+
+
+
+
+  
 </body>
 </html>
