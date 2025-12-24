@@ -10,6 +10,7 @@ function endGame(){quizContainer.classList.add('hidden'); summarySection.classLi
 //function saveTopScore(name,score){const raw=localStorage.getItem(STORAGE_KEY); const arr=raw?JSON.parse(raw):[]; arr.push({name,score,date:new Date().toISOString()}); arr.sort((a,b)=>{if(b.score!==a.score) return b.score-a.score; return new Date(b.date)-new Date(a.date);}); const top5=arr.slice(0,5); localStorage.setItem(STORAGE_KEY, JSON.stringify(top5));}
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbx1HdH-ItpI553s6uHVOed4oqEDFy2v2yB7dfBV4-DE7bIE2z5jG3ABcXDsKrOvxZoR/exec';
+                
 async function saveTopScore(name, score) {
   try {
     await fetch(API_URL, {
@@ -20,7 +21,7 @@ async function saveTopScore(name, score) {
     });
     // Non potrai leggere res (è "opaque"), ma il server salva comunque.
   } catch (e) {
-    console.warn('Errore salvataggio remoto:', e);
+    console.warn('Errore salvataggio remoto su googlesheet:', e);
   }
 }
 
