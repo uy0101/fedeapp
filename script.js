@@ -9,27 +9,19 @@ function nextQuestion(){if(currentIndex<9){currentIndex+=1; progressLabel.textCo
 function endGame(){quizContainer.classList.add('hidden'); summarySection.classList.remove('hidden'); summaryPlayer.textContent=playerName; summaryScore.textContent=score; listCorrect.innerHTML=''; listWrong.innerHTML=''; answersLog.forEach(item=>{const li=document.createElement('li'); li.innerHTML=`<strong>Q:</strong> ${item.question}<br><strong>Risposta:</strong> ${item.chosenText}`; if(item.isCorrect){listCorrect.appendChild(li);} else {const li2=document.createElement('li'); li2.innerHTML=`<strong>Q:</strong> ${item.question}<br><strong>Tua risposta:</strong> ${item.chosenText}<br><strong>Corretta:</strong> ${item.correctText}`; listWrong.appendChild(li2);}}); saveTopScore(playerName, score);}
 //function saveTopScore(name,score){const raw=localStorage.getItem(STORAGE_KEY); const arr=raw?JSON.parse(raw):[]; arr.push({name,score,date:new Date().toISOString()}); arr.sort((a,b)=>{if(b.score!==a.score) return b.score-a.score; return new Date(b.date)-new Date(a.date);}); const top5=arr.slice(0,5); localStorage.setItem(STORAGE_KEY, JSON.stringify(top5));}
 
-// URL della tua Apps Script Web App
 const API_URL = 'https://script.google.com/macros/s/AKfycbx1HdH-ItpI553s6uHVOed4oqEDFy2v2yB7dfBV4-DE7bIE2z5jG3ABcXDsKrOvxZoR/exec';
-
 async function saveTopScore(name, score) {
-  // Invia al backend globale
   try {
     await fetch(API_URL, {
       method: 'POST',
+      mode: 'no-cors',                // <-- evita CORS sul POST
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, score })
     });
-  } catch (err) {
-    console.warn('Errore salvataggio remoto:', err);
+    // Non potrai leggere res (è "opaque"), ma il server salva comunque.
+  } catch (e) {
+    console.warn('Errore salvataggio remoto:', e);
   }
-
-  // (Opzionale) mantieni anche la top 5 locale solo come “storico browser”
-  const raw = localStorage.getItem(STORAGE_KEY);
-  const arr = raw ? JSON.parse(raw) : [];
-  arr.push({ name, score, date: new Date().toISOString() });
-  arr.sort((a,b) => b.score !== a.score ? b.score - a.score : new Date(b.date) - new Date(a.date));
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr.slice(0,5)));
 }
 
 
